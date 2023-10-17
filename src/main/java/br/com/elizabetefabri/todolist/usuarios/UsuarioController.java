@@ -1,5 +1,6 @@
 package br.com.elizabetefabri.todolist.usuarios;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,10 @@ public class UsuarioController {
             /*System.out.println("Usuário já existe");*/
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuário já existe");
         }
+
+        var senhaHash = BCrypt.withDefaults().hashToString(12, usuarioModel.getSenha().toCharArray());
+        usuarioModel.setSenha(senhaHash);
+
         var usuarioCadastrado = this.usuarioRepositorio.save(usuarioModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCadastrado);
     }
